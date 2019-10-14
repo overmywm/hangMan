@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+window.onload = function () {
+
+  
+  var word ;
+  var blank ;
+  var guesses = [ ]; 
+  var chances ;
+  var counter ;
+  var fetchObj;
+  var input = "hard"; //in case there is an issue it defaults to hard
+  var alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+  const form = document.getElementById('form');
+  form.addEventListener('submit', logSubmit);  
+  document.getElementById("subBtn").disabled = true;
+
+  
+  function logSubmit(event) {
+      event.preventDefault();
+			player = document.getElementById("player").value;
+      console.log(player);
+      document.getElementById("player").value = "";
+      if(guesses.includes(player)){
+        alert("Already tried that")
+      }else if(alphabet.includes(player)){
+        guesses.push(player);
+        pasteTested(player);
+        doesItFit(player);
+      }else{
+		alert("letters only, no special characters etc.")
+	}
+	  
+  }
+  
+  function doesItFit(player){
+	if(chances <= 0){
+	alert("You already lost, just reset")
+	return;}
+    var foundOne = 0;
+    for (var i = 0; i < word.length; i++) {
+        if (fetchObj[i] === player) {
+          console.log("true");
+          console.log(chances);
+          foundOne +=1;
+		  counter += 1;
+          $("#"+i+"").replaceWith(player);
+        }
+    }
+	if(counter == fetchObj.length){
+      alert("You Win, hit the Play again button to reset")
+	  document.getElementById("subBtn").disabled = true;
+    }
+    if(foundOne == 0){
+      chances -=1;
+	  addMan();
+      console.log(chances);
+    }
+  }
+  
+  function pasteTested(player){
+      var node = document.createElement("li");
+      node.setAttribute('id', 'letter');
+			var textnode = document.createTextNode(player);
+      node.appendChild(textnode);
+			document.getElementById("tested").appendChild(node);
+  }
+  function chooseAndHideWord() {
+    wordHolder = document.getElementById('wordToGuess');
+    correct = document.createElement('ul');
+    for (var i = 0; i < fetchObj.length; i++) {
+      correct.setAttribute('id', 'my-word');
+      blank = document.createElement('li');
+      blank.setAttribute('id', i);
+      blank.innerHTML = "_";
+      guesses.push(blank);
+      wordHolder.appendChild(correct);
+      correct.appendChild(blank);
+    }
+  }
+
+ function play() {
+    word = "question";
+    console.log(word);
+    guesses = [ ];
+    chances = 7;
+    counter = 0;
+    //wordy(input);
+  }
+  
+var canvas = document.getElementById("gallows");
+var ctx = canvas.getContext('2d');
+ctx.fillRect(100,0,1,15);
+function addMan(){
+	switch (chances) {
+						case 6:
+							drawParts(100,35,100,60);
+							break;
+						case 5:
+							drawParts(100, 35, 120,57); 
+							break;
+						case 4:
+							drawParts(100, 35, 80,57); 
+							break;
+						case 3:
+							drawParts(100, 60, 80,97); 
+							break;
+						case 2:
+							drawParts(100, 60, 120,97);
+							break;
+						case 1:
+							ctx.beginPath();
+							ctx.arc(100, 25, 10, 0, 2 * Math.PI);
+							ctx.stroke();
+							break;
+						case 0:
+							alert("You lose, reset")
+							document.getElementById("subBtn").disabled = true;
+							break;
+			   } 
+}
+function drawParts(x1, y1, x2, y2){
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = 'blue';
+  ctx.beginPath(); 
+  ctx.moveTo(x1,y1);
+  ctx.lineTo(x2,y2);
+  ctx.stroke();
+}
+  
+function wordy(input){
+  fetch('https://hangman-api.lively.software/?difficulty='+input+'')
+    .then(res => res.json())
+    .then(data => fetchObj = Object.values(data).toString())
+    .then(fetchObj => console.log(fetchObj))
+    .then (() => chooseAndHideWord())
+}
+document.getElementById("btnEz").addEventListener("click", function(){
+  wordy("easy");
+  document.getElementById("btnEz").disabled = true;
+  document.getElementById("btnMed").disabled = true;
+  document.getElementById("btnHard").disabled = true;
+  document.getElementById("subBtn").disabled = false;
+  document.getElementById("btnEz").innerHTML = "Easy Active";
+  document.getElementById("btnHard").innerHTML = "";
+  document.getElementById("btnMed").innerHTML = "";
+
+  
+});
+document.getElementById("btnMed").addEventListener("click", function(){
+  wordy("medium");
+  document.getElementById("btnEz").disabled = true;
+  document.getElementById("btnMed").disabled = true;
+  document.getElementById("btnHard").disabled = true;
+  document.getElementById("subBtn").disabled = false;
+  document.getElementById("btnMed").innerHTML = "Medium Active";
+  document.getElementById("btnHard").innerHTML = "";
+  document.getElementById("btnEz").innerHTML = "";
+
+});
+document.getElementById("btnHard").addEventListener("click", function(){
+  wordy("hard");
+  document.getElementById("btnEz").disabled = true;
+  document.getElementById("btnMed").disabled = true;
+  document.getElementById("btnHard").disabled = true;
+  document.getElementById("subBtn").disabled = false;
+  document.getElementById("btnHard").innerHTML = "Hard Active";
+  document.getElementById("btnEz").innerHTML = "";
+  document.getElementById("btnMed").innerHTML = "";
+});
+document.getElementById("resetBtn").addEventListener("click", function(){
+  location.reload();
+});
+
+
+
+play(); 
+  
+}
+</script>
+<style>
+#my-word li {
+  display: inline-block;
+  padding: .05em;
+  font-size:3em;
+}
+p {
+  display: inline-block;
+  padding: .05em;
+  font-size:3em;
+}
+#tested li {
+  display: inline-block;
+  padding: .05em;
+  font-size:2em;
+}
+h1 { text-align: center }
+h3 { text-align: center }
+.controls{
+  background-color: #ffffff;
+  border: 2px solid #999999;
+  padding: 10px; 
+  margin-left: auto;
+  margin-right: auto;
+  width: 40em
+}
+.holder{ border-radius: 25px;
+  text-align: center;
+  background-color: #ffffff;
+  border: 2px solid #999999;
+  padding: 10px; 
+  margin-left: auto;
+  margin-right: auto;
+  width: 40em
+}
+
+input[type=submit] {
+  width: 16em;
+  padding: 6px 6px;
+  margin: 8px 0;
+  border: none;
+  background-color:#c91414;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+input[type=text], select {
+  width:70%;
+  font-size:7em;
+  text-align: center;
+}
+
+canvas {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: 800px;
+  border: 2px solid black;
+}
+</style>
+</head>
+<body>
+
+<div class='wrapper'>
+   <h1>Hangman</h1>
+    <h3>Put in a letter and hit submit</h3>
+</div>
+<div class="wrapper">
+<div align="center">
+    <button id = "btnEz">easy</button>
+    <button id="btnMed">medium</button>
+    <button id="btnHard">hard</button>
+  </div>
+  <div class = 'holder' id="wordToGuess">
+    <ul id = "tested"</ul>
+  </div>
+     <canvas id="gallows">Canvas won't work here</canvas>
+    <div class = 'holder' class="container">
+      <form id="form" align="center">
+        <input id="player" type="text" onkeyup="this.value = this.value.toLowerCase();"maxlength="1">
+        <input type="submit" id="subBtn" value="Submit">
+      </form>
+      <button id="resetBtn">Play again</button>
+    </div>
+</div>
+
+</body>
+</html>
