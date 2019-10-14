@@ -53,6 +53,8 @@ window.onload = function () {
 	if(counter == fetchObj.length){
       alert("You Win, hit the Play again button to reset")
 	  document.getElementById("subBtn").disabled = true;
+	  document.getElementById('note').innerHTML = 'You Win';
+		document.getElementById("note").style.fontSize = "5em";
     }
     if(foundOne == 0){
       chances -=1;
@@ -119,6 +121,9 @@ function addMan(){
 						case 0:
 							alert("You lose, reset")
 							document.getElementById("subBtn").disabled = true;
+							document.getElementById('note').innerHTML = 'You Lose';
+							document.getElementById("note").style.fontSize = "5em";
+
 							break;
 			   } 
 }
@@ -248,7 +253,7 @@ canvas {
 
 <div class='wrapper'>
    <h1>Hangman</h1>
-    <h3>Put in a letter and hit submit</h3>
+    <h3 id = "note">Put in a letter and hit submit</h3>
 </div>
 <div class="wrapper">
 <div align="center">
